@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Fundación Tarea Global — Libro Contable</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --ink:#16324F;
+  --ink-light:#2B4A6E;
+  --paper:#F3F1EA;
+  --paper-raised:#FFFFFF;
+  --amber:#C08A2E;
+  --sage:#5C7A6B;
+  --alert:#B0463A;
+  --line:#D9D4C6;
+  --text:#22201B;
+  --text-dim:#6B6759;
+  --radius:3px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  line-height:1.5;
+}
+.app{display:flex;min-height:600px;}
+
+/* Sidebar */
+.sidebar{
+  width:230px;
+  flex-shrink:0;
+  background:var(--ink);
+  color:#EDE7D9;
+  padding:22px 0;
+  display:flex;
+  flex-direction:column;
+}
+.brand{
+  padding:0 20px 18px 20px;
+  border-bottom:1px solid rgba(237,231,217,0.15);
+  margin-bottom:10px;
+}
+.brand .mark{
+  font-family:'Source Serif 4',serif;
+  font-weight:700;
+  font-size:19px;
+  line-height:1.15;
+  color:#fff;
+}
+.brand .sub{
+  font-size:10.5px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--amber);
+  margin-top:5px;
+}
+nav{display:flex;flex-direction:column;gap:1px;padding:6px 10px;}
+nav button{
+  all:unset;
+  cursor:pointer;
+  padding:9px 12px;
+  border-radius:var(--radius);
+  font-size:13px;
+  color:#CFC9B8;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+nav button:hover{background:rgba(255,255,255,0.06);color:#fff;}
+nav button.active{background:var(--amber);color:#1A1300;font-weight:600;}
+nav .grp-label{
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:#7E8FA3;padding:14px 12px 4px 12px;
+}
+.sidebar-foot{
+  margin-top:auto;padding:14px 20px 0 20px;
+  border-top:1px solid rgba(237,231,217,0.15);
+  font-size:11px;color:#7E8FA3;
+}
+
+/* Main */
+main{flex:1;padding:28px 34px 60px 34px;max-width:1080px;}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.pagehead h1{
+  font-family:'Source Serif 4',serif;
+  font-size:26px;margin:0;color:var(--ink);font-weight:700;
+}
+.pagehead p{margin:4px 0 0 0;color:var(--text-dim);font-size:13px;}
+.period-picker{display:flex;align-items:center;gap:8px;background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius);padding:6px 10px;}
+.period-picker select{border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);cursor:pointer;}
+.period-picker select:focus{outline:none;}
+
+.card{
+  background:var(--paper-raised);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px 22px;
+  margin-bottom:18px;
+}
+.card h2{
+  font-family:'Source Serif 4',serif;
+  font-size:16px;margin:0 0 4px 0;color:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card .hint{color:var(--text-dim);font-size:12.5px;margin:0 0 14px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+.stat{
+  border-left:3px solid var(--amber);
+  padding:4px 0 4px 12px;
+}
+.stat .n{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:var(--ink);}
+.stat .l{font-size:11.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.02em;}
+.badge.pend{background:#F4E3D0;color:#8A5A16;}
+.badge.sinmov{background:#E4E9E3;color:var(--sage);}
+.badge.conmov{background:#DCEAF5;color:var(--ink);}
+.badge.pres{background:#DDEBD9;color:#3B6142;}
+.badge.venc{background:#F5DCDA;color:var(--alert);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{
+  text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--text-dim);border-bottom:1px solid var(--line);padding:7px 8px;font-weight:600;
+}
+td{padding:8px;border-bottom:1px solid #EFEBE1;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-family:'IBM Plex Mono',monospace;}
+.muted{color:var(--text-dim);}
+.small{font-size:11.5px;}
+
+.btn{
+  all:unset;cursor:pointer;
+  background:var(--ink);color:#fff;
+  padding:8px 15px;border-radius:var(--radius);
+  font-size:12.5px;font-weight:600;letter-spacing:.01em;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{background:var(--ink-light);}
+.btn.amber{background:var(--amber);color:#1A1300;}
+.btn.amber:hover{background:#D69A3E;}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn.ghost:hover{background:#EFEBE1;}
+.btn.danger{background:transparent;color:var(--alert);}
+.btn.danger:hover{text-decoration:underline;}
+.btn.xs{padding:4px 9px;font-size:11px;}
+
+.formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:10px;align-items:end;}
+.field label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em;}
+.field input,.field select{
+  width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:var(--radius);
+  font-family:'Inter',sans-serif;font-size:13px;background:#FBFAF6;
+}
+.field input:focus,.field select:focus{outline:2px solid var(--amber);outline-offset:-1px;}
+
+.steps{counter-reset:step;list-style:none;padding:0;margin:0;}
+.steps li{
+  counter-increment:step;position:relative;padding:0 0 20px 38px;margin-left:2px;
+  border-left:2px solid var(--line);
+}
+.steps li:last-child{border-left:2px solid transparent;padding-bottom:0;}
+.steps li::before{
+  content:counter(step);position:absolute;left:-15px;top:-2px;
+  width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center;
+}
+.steps li b{display:block;color:var(--ink);font-size:13.5px;margin-bottom:2px;}
+.steps li span{color:var(--text-dim);font-size:12.5px;}
+
+.alertbox{
+  border:1px solid #E8C7BD;background:#FBF1EE;color:#8A3B2E;
+  padding:11px 14px;border-radius:var(--radius);font-size:12.5px;margin-bottom:14px;
+}
+.notebox{
+  border:1px solid var(--line);background:#EFEBDD;color:#5A5540;
+  padding:11px 14px;border-radius:var(--radius);font-size:12px;margin-top:10px;
+}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EFEBE1;}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row .lab b{display:block;font-size:13.5px;color:var(--ink);}
+.toggle-row .lab span{font-size:12px;color:var(--text-dim);}
+.switch{position:relative;width:42px;height:23px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;inset:0;background:#CFC9B8;border-radius:20px;transition:.15s;}
+.slider::before{content:"";position:absolute;height:17px;width:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
+input:checked + .slider{background:var(--sage);}
+input:checked + .slider::before{transform:translateX(19px);}
+
+.locked{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--ink);}
+.lockcard{background:var(--paper-raised);padding:34px 38px;border-radius:6px;width:300px;text-align:center;}
+.lockcard .mark{font-family:'Source Serif 4',serif;font-weight:700;font-size:20px;color:var(--ink);margin-bottom:2px;}
+.lockcard .sub{font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:20px;}
+.lockcard input{width:100%;padding:10px;border:1px solid var(--line);border-radius:var(--radius);text-align:center;font-family:'IBM Plex Mono',monospace;font-size:15px;letter-spacing:.2em;margin-bottom:12px;}
+.lockcard .err{color:var(--alert);font-size:12px;min-height:16px;margin-bottom:8px;}
+.empty{padding:26px;text-align:center;color:var(--text-dim);font-size:13px;}
+a.link{color:var(--ink);}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.reservado{font-style:italic;color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<div id="lockScreen" class="locked" style="display:none;">
+  <div class="lockcard">
+    <div class="mark">Tarea Global</div>
+    <div class="sub">Libro Contable</div>
+    <div id="lockPrompt"></div>
+    <input type="password" id="pinInput" maxlength="8" inputmode="numeric" placeholder="····">
+    <div class="err" id="pinErr"></div>
+    <button class="btn amber" style="width:100%;justify-content:center;" onclick="submitPin()">Entrar</button>
+  </div>
+</div>
+
+<div class="app" id="appRoot" style="display:none;">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="mark">Fundación<br>Tarea Global</div>
+      <div class="sub">Libro Contable · SII</div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="sidebar-foot">
+      <div id="syncStatus" style="min-height:14px;color:#EDE7D9;margin-bottom:8px;"></div>
+      RUT registrado · Este libro es una herramienta de apoyo. La declaración oficial se presenta en sii.cl. Los datos viven en tu Google Sheet.
+    </div>
+  </div>
+  <main id="main"></main>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   BACKEND — Google Apps Script Web App (Google Sheet as database)
+--------------------------------------------------------------- */
+// Pega aquí la URL que entrega "Implementar → Nueva implementación" en Apps Script,
+// terminada en /exec. Ver Code.gs para las instrucciones de instalación.
+const APPS_SCRIPT_URL = https://script.google.com/macros/s/AKfycbzA40rGLHfb41sg1KIl2Z1h5fWdYJsF_qzdIYf7zzh836MyhUbv0URT0jFQVoCMBuLETA/exec';
+
+const SHEET_NAME = {
+  donaciones:'Donaciones', facturas:'Facturas', exportaciones:'Exportaciones',
+  gastos:'Gastos', honorarios:'Honorarios'
+};
+
+function backendReady(){ return APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('PASTE_YOUR'); }
+
+async function apiGet(){
+  const res = await fetch(APPS_SCRIPT_URL);
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error||'Error al leer datos');
+  return json.data;
+}
+async function apiPost(payload){
+  setSyncStatus('saving');
+  try{
+    // sin cabeceras explícitas: fetch usa text/plain por defecto y evita el preflight CORS
+    const res = await fetch(APPS_SCRIPT_URL, {method:'POST', body: JSON.stringify(payload)});
+    const json = await res.json();
+    if(!json.ok) throw new Error(json.error||'Error al guardar');
+    setSyncStatus('ok');
+    return json.data;
+  }catch(e){
+    console.error('apiPost error', e);
+    setSyncStatus('error');
+    throw e;
+  }
+}
+function setSyncStatus(state){
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  const map = {saving:'Guardando…', ok:'Guardado ✓', error:'⚠ No se pudo guardar — revisa tu conexión'};
+  el.textContent = map[state]||'';
+  el.className = 'sync-'+state;
+  if(state==='ok') setTimeout(()=>{ if(el.textContent==='Guardado ✓') el.textContent=''; }, 2000);
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ---------------------------------------------------------------
+   STATE
+--------------------------------------------------------------- */
+let CFG = { ivaActiva:false, exportActiva:false, empleadosActiva:false, pin:null, disolucionBeneficiario:'Agrupación de Universidades Regionales (AUR) de Chile' };
+let DATA = { donaciones:[], facturas:[], exportaciones:[], gastos:[], honorarios:[], remuneraciones:[], f29:{} };
+let CURRENT = 'dashboard';
+let PERIOD = periodNow();
+
+function periodNow(){
+  const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function periodLabel(p){
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const [y,m]=p.split('-'); return meses[parseInt(m)-1]+' '+y;
+}
+function fmt(n){
+  n = Math.round(Number(n)||0);
+  return '$'+n.toLocaleString('es-CL');
+}
+function inPeriod(dateStr,p){ return (dateStr||'').startsWith(p); }
+
+/* ---------------------------------------------------------------
+   BOOT / PIN
+--------------------------------------------------------------- */
+async function boot(){
+  document.getElementById('lockScreen').style.display='flex';
+
+  if(!backendReady()){
+    document.getElementById('lockPrompt').innerHTML =
+      '<div class="err" style="color:#B0463A;">Falta configurar la conexión a Google Sheets.<br>Pega la URL de tu Apps Script en <code>APPS_SCRIPT_URL</code> dentro de este archivo (ver Code.gs).</div>';
+    document.getElementById('pinInput').style.display='none';
+    document.querySelector('.lockcard .btn').style.display='none';
+    return;
+  }
+
+  document.getElementById('lockPrompt').innerHTML = 'Conectando con la planilla…';
+  try{
+    await syncFromBackend();
+  }catch(e){
+    document.getElementById('lockPrompt').innerHTML =
+      '<div class="err" style="color:#B0463A;">No se pudo conectar con Google Sheets. Revisa que la implementación esté publicada con acceso "Cualquier usuario" y que la URL sea correcta.<br><span style="font-size:10px;">'+String(e.message||e)+'</span></div>';
+    document.getElementById('pinInput').style.display='none';
+    document.querySelector('.lockcard .btn').style.display='none';
+    return;
+  }
+
+  if(!CFG.pin){
+    document.getElementById('lockPrompt').innerHTML = '<div style="color:#5C7A6B;">Crea un PIN de 4 a 8 dígitos para este libro contable.</div>';
+  } else {
+    document.getElementById('lockPrompt').innerHTML = 'Ingresa el PIN para continuar.';
+  }
+  document.getElementById('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') submitPin(); });
+}
+async function syncFromBackend(){
+  const data = await apiGet();
+  CFG = data.config;
+  DATA.donaciones = data.donaciones||[];
+  DATA.facturas = data.facturas||[];
+  DATA.exportaciones = data.exportaciones||[];
+  DATA.gastos = data.gastos||[];
+  DATA.honorarios = data.honorarios||[];
+  DATA.f29 = data.f29||{};
+}
+async function submitPin(){
+  const val = document.getElementById('pinInput').value.trim();
+  if(!CFG.pin){
+    if(val.length<4){ document.getElementById('pinErr').textContent='Mínimo 4 dígitos.'; return; }
+    CFG.pin = val;
+    try{ await apiPost({sheet:'Config', op:'setKV', key:'pin', value:val}); }catch(e){ document.getElementById('pinErr').textContent='No se pudo guardar el PIN, intenta de nuevo.'; return; }
+    unlock();
+  } else {
+    if(val===CFG.pin){ unlock(); }
+    else{ document.getElementById('pinErr').textContent='PIN incorrecto.'; }
+  }
+}
+function unlock(){
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('appRoot').style.display='flex';
+  renderNav();
+  goTo('dashboard');
+}
+
+/* ---------------------------------------------------------------
+   NAV
+--------------------------------------------------------------- */
+const NAV_ITEMS = [
+  {id:'dashboard', label:'Panel del mes', grp:null},
+  {id:'donaciones', label:'Donaciones y aportes', grp:'Ingresos'},
+  {id:'facturas', label:'Facturas / boletas nacionales', grp:'Ingresos'},
+  {id:'exportaciones', label:'Facturas al extranjero', grp:'Ingresos'},
+  {id:'gastos', label:'Gastos y compras', grp:'Egresos'},
+  {id:'honorarios', label:'Honorarios y remuneraciones', grp:'Egresos'},
+  {id:'f29', label:'Cálculo F29 del mes', grp:'Declaración'},
+  {id:'guia', label:'Guía paso a paso SII', grp:'Declaración'},
+  {id:'aportes-semestrales', label:'Registro semestral (Art. 8°)', grp:'Reportes'},
+  {id:'anual', label:'Obligaciones anuales', grp:'Reportes'},
+  {id:'exportar', label:'Exportar / respaldo', grp:'Reportes'},
+  {id:'config', label:'Configuración', grp:null},
+];
+function renderNav(){
+  const nav = document.getElementById('nav');
+  let html=''; let lastGrp=undefined;
+  NAV_ITEMS.forEach(it=>{
+    if(it.grp!==lastGrp){ html+=`<div class="grp-label">${it.grp||''}</div>`; lastGrp=it.grp; }
+    if(it.id==='honorarios' && !CFG.empleadosActiva){
+      html += `<button onclick="goTo('honorarios')" class="${CURRENT===it.id?'active':''}" style="opacity:.55;">${it.label} · inactivo</button>`;
+      return;
+    }
+    if((it.id==='facturas') && !CFG.ivaActiva){
+      html += `<button onclick="goTo('facturas')" class="${CURRENT===it.id?'active':''}" style="opacity:.55;">${it.label} · inactivo</button>`;
+      return;
+    }
+    if((it.id==='exportaciones') && !CFG.exportActiva){
+      html += `<button onclick="goTo('exportaciones')" class="${CURRENT===it.id?'active':''}" style="opacity:.55;">${it.label} · inactivo</button>`;
+      return;
+    }
+    html += `<button onclick="goTo('${it.id}')" class="${CURRENT===it.id?'active':''}">${it.label}</button>`;
+  });
+  nav.innerHTML = html;
+}
+function goTo(id){ CURRENT=id; renderNav(); render(); }
+
+/* ---------------------------------------------------------------
+   PERIOD PICKER (shared header partial)
+--------------------------------------------------------------- */
+function periodPickerHTML(){
+  let opts='';
+  const now=new Date();
+  for(let i=-18;i<=6;i++){
+    const d=new Date(now.getFullYear(), now.getMonth()+i, 1);
+    const p = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    opts += `<option value="${p}" ${p===PERIOD?'selected':''}>${periodLabel(p)}</option>`;
+  }
+  return `<div class="period-picker">📅 <select onchange="PERIOD=this.value; render();">${opts}</select></div>`;
+}
+
+/* ---------------------------------------------------------------
+   COMPUTATIONS FOR A PERIOD
+--------------------------------------------------------------- */
+function periodTotals(p){
+  const donaciones = DATA.donaciones.filter(x=>inPeriod(x.fecha,p));
+  const facturas = DATA.facturas.filter(x=>inPeriod(x.fecha,p));
+  const exportaciones = DATA.exportaciones.filter(x=>inPeriod(x.fecha,p));
+  const gastos = DATA.gastos.filter(x=>inPeriod(x.fecha,p));
+  const honorarios = DATA.honorarios.filter(x=>inPeriod(x.fecha,p));
+  const remuneraciones = DATA.remuneraciones.filter(x=>inPeriod(x.fecha,p));
+
+  const totalDonaciones = donaciones.reduce((s,x)=>s+Number(x.monto||0),0);
+  const ventasAfectas = facturas.reduce((s,x)=>s+Number(x.montoNeto||0),0);
+  const debitoFiscal = facturas.reduce((s,x)=>s+Number(x.iva||0),0);
+  const ventasExportacion = exportaciones.reduce((s,x)=>s+Number(x.montoClp||0),0);
+
+  const gastoGravada = gastos.filter(x=>x.uso==='gravada');
+  const gastoExenta = gastos.filter(x=>x.uso==='exenta');
+  const gastoComun = gastos.filter(x=>x.uso==='comun');
+
+  const ivaGravada = gastoGravada.reduce((s,x)=>s+Number(x.iva||0),0);
+  const ivaComunTotal = gastoComun.reduce((s,x)=>s+Number(x.iva||0),0);
+  const ivaExentaNoCred = gastoExenta.reduce((s,x)=>s+Number(x.iva||0),0);
+
+  const baseAfectaTotal = ventasAfectas + ventasExportacion; // ambas dan derecho a crédito
+  const baseTotalOperaciones = baseAfectaTotal; // donaciones no son "operaciones IVA"
+  let proporcion = 1;
+  if(baseTotalOperaciones + 0 > 0 && (ventasAfectas+ventasExportacion) >= 0){
+    // si hay ventas exentas "puras" ademas de afectas -- en este modelo simplificado
+    // usamos proporcion = afecta/(afecta+exportacion) siempre 1 salvo que declares gastos 'exenta'
+    proporcion = 1;
+  }
+  // proporción real solo es relevante si coexisten ventas con y sin derecho a credito.
+  // Aqui exportacion SI da derecho a credito (igual que afecta). Las donaciones no entran al calculo IVA.
+  const creditoComun = ivaComunTotal; // por defecto se asume 100% si toda venta con movimiento tiene derecho a credito
+  const creditoFiscalTotal = ivaGravada + creditoComun;
+
+  const totalHonorarios = honorarios.reduce((s,x)=>s+Number(x.monto||0),0);
+  const retencionHonorarios = honorarios.reduce((s,x)=>s+Number(x.retencion||0),0);
+  const totalRemuneraciones = remuneraciones.reduce((s,x)=>s+Number(x.monto||0),0);
+
+  const ivaAPagar = Math.max(0, debitoFiscal - creditoFiscalTotal);
+  const remanenteCredito = Math.max(0, creditoFiscalTotal - debitoFiscal);
+
+  const sinMovimiento = (donaciones.length===0 && facturas.length===0 && exportaciones.length===0 &&
+    gastos.length===0 && honorarios.length===0 && remuneraciones.length===0);
+
+  return {
+    donaciones,facturas,exportaciones,gastos,honorarios,remuneraciones,
+    totalDonaciones, ventasAfectas, debitoFiscal, ventasExportacion,
+    ivaGravada, ivaComunTotal, ivaExentaNoCred, creditoFiscalTotal,
+    totalHonorarios, retencionHonorarios, totalRemuneraciones,
+    ivaAPagar, remanenteCredito, sinMovimiento,
+    totalAPagarEstimado: ivaAPagar + retencionHonorarios
+  };
+}
+
+/* ---------------------------------------------------------------
+   RENDER ROUTER
+--------------------------------------------------------------- */
+function render(){
+  const main = document.getElementById('main');
+  renderNav();
+  if(CURRENT==='dashboard') main.innerHTML = viewDashboard();
+  else if(CURRENT==='donaciones') main.innerHTML = viewList('donaciones');
+  else if(CURRENT==='facturas') main.innerHTML = viewList('facturas');
+  else if(CURRENT==='exportaciones') main.innerHTML = viewList('exportaciones');
+  else if(CURRENT==='gastos') main.innerHTML = viewList('gastos');
+  else if(CURRENT==='honorarios') main.innerHTML = viewList('honorarios');
+  else if(CURRENT==='f29') main.innerHTML = viewF29();
+  else if(CURRENT==='guia') main.innerHTML = viewGuia();
+  else if(CURRENT==='aportes-semestrales') main.innerHTML = viewAportesSemestrales();
+  else if(CURRENT==='anual') main.innerHTML = viewAnual();
+  else if(CURRENT==='exportar') main.innerHTML = viewExportar();
+  else if(CURRENT==='config') main.innerHTML = viewConfig();
+  wireForms();
+}
+
+/* ---------------------------------------------------------------
+   DASHBOARD
+--------------------------------------------------------------- */
+function viewDashboard(){
+  const t = periodTotals(PERIOD);
+  const estado = DATA.f29[PERIOD] || {status:'pendiente'};
+  const badgeMap = {pendiente:['pend','Pendiente'], sin_movimiento:['sinmov','Sin movimiento'], presentada:['pres','Presentada'], con_movimiento:['conmov','Con movimiento (sin presentar)']};
+  const [bcls,blabel] = badgeMap[estado.status]||badgeMap.pendiente;
+
+  // deadline: day 20 of month after PERIOD
+  const [y,m] = PERIOD.split('-').map(Number);
+  const deadline = new Date(y, m, 20); // m is next month index since JS months are 0-based and PERIOD's month m corresponds to m-1
+  const today = new Date();
+  const daysLeft = Math.ceil((deadline-today)/(1000*60*60*24));
+
+  let last6='';
+  for(let i=5;i>=0;i--){
+    const d=new Date(y,(m-1)-i,1);
+    const p=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const est = DATA.f29[p]||{status:'pendiente'};
+    const [c,l]=badgeMap[est.status]||badgeMap.pendiente;
+    last6 += `<tr><td>${periodLabel(p)}</td><td><span class="badge ${c}">${l}</span></td>
+      <td class="small muted">${est.fecha?('presentado '+est.fecha):'—'}</td></tr>`;
+  }
+
+  return `
+  <div class="pagehead">
+    <div><h1>Panel del mes</h1><p>Estado general de la contabilidad y del Formulario 29.</p></div>
+    ${periodPickerHTML()}
+  </div>
+
+  ${daysLeft>=0 && daysLeft<=7 && estado.status!=='presentada' ? `<div class="alertbox">⏰ El F29 de ${periodLabel(PERIOD)} vence el 20 y quedan <b>${daysLeft} día(s)</b>. Revisa la sección "Cálculo F29" y luego "Guía paso a paso".</div>` : ''}
+
+  <div class="grid3">
+    <div class="card"><div class="stat"><div class="n">${fmt(t.totalDonaciones)}</div><div class="l">Donaciones del mes</div></div></div>
+    <div class="card"><div class="stat"><div class="n">${fmt(t.debitoFiscal)}</div><div class="l">IVA débito (ventas nacionales)</div></div></div>
+    <div class="card"><div class="stat"><div class="n">${fmt(t.totalAPagarEstimado)}</div><div class="l">Estimado a pagar en F29</div></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Estado del período — ${periodLabel(PERIOD)} <span class="badge ${bcls}">${blabel}</span></h2>
+    <p class="hint">${t.sinMovimiento ? 'No hay registros cargados para este mes: corresponde declarar "sin movimiento".' : 'Hay movimientos registrados este mes: revisa el cálculo antes de declarar.'}</p>
+    <div class="toolbar">
+      <button class="btn" onclick="goTo('f29')">Ver cálculo del F29</button>
+      <button class="btn ghost" onclick="goTo('guia')">Ir a la guía de declaración</button>
+      ${estado.status!=='presentada' ? `<button class="btn amber" onclick="marcarPresentada()">Marcar como presentada</button>` : ''}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Últimos 6 meses</h2>
+    <table><thead><tr><th>Período</th><th>Estado</th><th>Detalle</th></tr></thead>
+    <tbody>${last6}</tbody></table>
+  </div>
+  `;
+}
+async function marcarPresentada(){
+  const fecha = new Date().toISOString().slice(0,10);
+  DATA.f29[PERIOD] = {status:'presentada', fecha};
+  render();
+  try{ await apiPost({sheet:'F29Estados', op:'setF29', periodo:PERIOD, status:'presentada', fecha}); }
+  catch(e){ alert('No se pudo guardar en la planilla. Vuelve a intentarlo cuando tengas conexión.'); }
+}
+
+/* ---------------------------------------------------------------
+   GENERIC LIST VIEWS (donaciones, facturas, exportaciones, gastos, honorarios)
+--------------------------------------------------------------- */
+const LIST_CONFIG = {
+  donaciones:{
+    title:'Donaciones y aportes', key:'donaciones',
+    hint:'Registro exigido por el Art. 8° de los estatutos: cada aporte con persona, monto y fecha.',
+    cols:[
+      {k:'fecha',label:'Fecha',type:'date'},
+      {k:'donante',label:'Aportante',type:'text'},
+      {k:'monto',label:'Monto',type:'number'},
+      {k:'reservado',label:'Reserva de nombre',type:'checkbox'},
+      {k:'nota',label:'Nota',type:'text'},
+    ]
+  },
+  facturas:{
+    title:'Facturas / boletas nacionales (afectas a IVA)', key:'facturas',
+    hint:'Ventas o servicios a clientes en Chile. El IVA se calcula automáticamente (19%).',
+    cols:[
+      {k:'fecha',label:'Fecha',type:'date'},
+      {k:'receptor',label:'Receptor',type:'text'},
+      {k:'montoNeto',label:'Monto neto',type:'number', onInput:'autoIVA'},
+      {k:'iva',label:'IVA (19%)',type:'number'},
+      {k:'folio',label:'N° folio',type:'text'},
+    ]
+  },
+  exportaciones:{
+    title:'Facturas al extranjero', key:'exportaciones',
+    hint:'Servicios prestados a personas o entidades sin domicilio ni residencia en Chile. Si Aduanas los califica como exportación (Art. 12°, letra E, N°16, DL 825), quedan exentos de IVA pero SÍ dan derecho a recuperar el crédito fiscal asociado — a diferencia de una exención común.',
+    cols:[
+      {k:'fecha',label:'Fecha',type:'date'},
+      {k:'receptor',label:'Cliente / país',type:'text'},
+      {k:'montoClp',label:'Monto (CLP equiv.)',type:'number'},
+      {k:'moneda',label:'Moneda original',type:'text'},
+      {k:'calificada',label:'¿Calificada por Aduanas?',type:'checkbox'},
+      {k:'folio',label:'N° folio',type:'text'},
+    ]
+  },
+  gastos:{
+    title:'Gastos y compras', key:'gastos',
+    hint:'Clasifica cada gasto según su uso, para calcular correctamente el crédito fiscal (Art. 23° N°2 y N°3, DL 825).',
+    cols:[
+      {k:'fecha',label:'Fecha',type:'date'},
+      {k:'proveedor',label:'Proveedor',type:'text'},
+      {k:'monto',label:'Monto neto',type:'number'},
+      {k:'iva',label:'IVA soportado',type:'number'},
+      {k:'uso',label:'Uso',type:'select', opts:[['gravada','Uso exclusivo actividad con IVA/exportación'],['exenta','Uso exclusivo donaciones (sin crédito)'],['comun','Uso común']]},
+      {k:'descripcion',label:'Descripción',type:'text'},
+    ]
+  },
+  honorarios:{
+    title:'Honorarios y remuneraciones', key:'honorarios',
+    hint:'Boletas de honorarios recibidas de terceros. La retención 2026 es 15,25%.',
+    cols:[
+      {k:'fecha',label:'Fecha',type:'date'},
+      {k:'prestador',label:'Prestador',type:'text'},
+      {k:'monto',label:'Monto bruto boleta',type:'number', onInput:'autoRetencion'},
+      {k:'retencion',label:'Retención (15,25%)',type:'number'},
+    ]
+  }
+};
+
+function viewList(name){
+  const cfg = LIST_CONFIG[name];
+  const inactive =
+    (name==='facturas' && !CFG.ivaActiva) ||
+    (name==='exportaciones' && !CFG.exportActiva) ||
+    (name==='honorarios' && !CFG.empleadosActiva);
+
+  const rows = DATA[name].filter(x=>inPeriod(x.fecha,PERIOD));
+  const total = rows.reduce((s,x)=> s+Number(x.monto||x.montoNeto||x.montoClp||0),0);
+
+  let inactiveNotice='';
+  if(inactive){
+    const label = name==='facturas'?'facturación afecta a IVA':(name==='exportaciones'?'facturación al extranjero':'honorarios/remuneraciones');
+    inactiveNotice = `<div class="alertbox">Este módulo está marcado como inactivo en Configuración porque aún no hay ${label}. Puedes activarlo en cualquier momento apenas empiece a aplicar — los registros no se pierden.
+      <div style="margin-top:8px;"><button class="btn xs amber" onclick="quickActivate('${name}')">Activar ahora</button></div></div>`;
+  }
+
+  let thead = cfg.cols.map(c=>`<th class="${c.type==='number'?'num':''}">${c.label}</th>`).join('')+'<th></th>';
+  let tbody = rows.map(r=>{
+    let tds = cfg.cols.map(c=>{
+      let v=r[c.k];
+      if(c.type==='checkbox') v = v? '✓' : '—';
+      if(c.type==='number') v = fmt(v);
+      if(v===undefined||v===null||v==='') v='—';
+      return `<td class="${c.type==='number'?'num':''} ${c.k==='nota'?'small muted':''}">${v}</td>`;
+    }).join('');
+    return `<tr>${tds}<td><button class="btn xs danger" onclick="deleteRow('${name}','${r.id}')">Eliminar</button></td></tr>`;
+  }).join('');
+  if(rows.length===0) tbody = `<tr><td colspan="${cfg.cols.length+1}" class="empty">Sin registros en ${periodLabel(PERIOD)}.</td></tr>`;
+
+  let formFields = cfg.cols.map(c=>{
+    if(c.type==='select'){
+      return `<div class="field"><label>${c.label}</label><select id="f_${c.k}">${c.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></div>`;
+    }
+    if(c.type==='checkbox'){
+      return `<div class="field"><label>${c.label}</label><select id="f_${c.k}"><option value="">No</option><option value="1">Sí</option></select></div>`;
+    }
+    let extra = c.onInput ? `oninput="${c.onInput}('${name}')"` : '';
+    return `<div class="field"><label>${c.label}</label><input id="f_${c.k}" type="${c.type==='date'?'date':(c.type==='number'?'number':'text')}" ${c.k==='fecha'?`value="${PERIOD}-01"`:''} ${extra}></div>`;
+  }).join('');
+
+  return `
+  <div class="pagehead">
+    <div><h1>${cfg.title}</h1><p>${cfg.hint}</p></div>
+    ${periodPickerHTML()}
+  </div>
+  ${inactiveNotice}
+  <div class="card">
+    <h2>Nuevo registro</h2>
+    <div class="formrow">${formFields}</div>
+    <button class="btn amber" onclick="addRow('${name}')">Agregar</button>
+  </div>
+  <div class="card">
+    <h2>${periodLabel(PERIOD)} <span class="muted small">— total ${fmt(total)}</span></h2>
+    <table><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>
+  </div>`;
+}
+
+function autoIVA(name){
+  const neto = Number(document.getElementById('f_montoNeto').value||0);
+  document.getElementById('f_iva').value = Math.round(neto*0.19);
+}
+function autoRetencion(name){
+  const monto = Number(document.getElementById('f_monto').value||0);
+  document.getElementById('f_retencion').value = Math.round(monto*0.1525);
+}
+async function quickActivate(name){
+  const key = name==='facturas'?'ivaActiva':(name==='exportaciones'?'exportActiva':'empleadosActiva');
+  CFG[key]=true;
+  render();
+  try{ await apiPost({sheet:'Config', op:'setKV', key, value:true}); }
+  catch(e){ alert('No se pudo guardar en la planilla.'); }
+}
+async function addRow(name){
+  const cfg = LIST_CONFIG[name];
+  const rec = {id:uid()};
+  cfg.cols.forEach(c=>{
+    const el = document.getElementById('f_'+c.k);
+    let v = el.value;
+    if(c.type==='checkbox') v = (v==='1');
+    if(c.type==='number') v = v===''?0:Number(v);
+    rec[c.k]=v;
+  });
+  if(!rec.fecha){ alert('Ingresa una fecha.'); return; }
+  DATA[name].push(rec);
+  render();
+  try{ await apiPost({sheet:SHEET_NAME[name], op:'add', record:rec}); }
+  catch(e){
+    DATA[name] = DATA[name].filter(x=>x.id!==rec.id);
+    render();
+    alert('No se pudo guardar el registro en la planilla. Intenta de nuevo.');
+  }
+}
+async function deleteRow(name,id){
+  const backup = DATA[name];
+  DATA[name] = DATA[name].filter(x=>x.id!==id);
+  render();
+  try{ await apiPost({sheet:SHEET_NAME[name], op:'delete', id}); }
+  catch(e){ DATA[name]=backup; render(); alert('No se pudo eliminar en la planilla. Intenta de nuevo.'); }
+}
+
+/* ---------------------------------------------------------------
+   F29
+--------------------------------------------------------------- */
+function viewF29(){
+  const t = periodTotals(PERIOD);
+  return `
+  <div class="pagehead">
+    <div><h1>Cálculo F29 — ${periodLabel(PERIOD)}</h1><p>Estimación de referencia. Confírmala siempre con la Propuesta de Declaración del SII.</p></div>
+    ${periodPickerHTML()}
+  </div>
+
+  <div class="card">
+    <h2>1 · IVA</h2>
+    <table>
+      <tr><td>Débito fiscal (19% ventas nacionales afectas)</td><td class="num">${fmt(t.debitoFiscal)}</td></tr>
+      <tr><td>Ventas de exportación (exentas, con derecho a crédito)</td><td class="num">${fmt(t.ventasExportacion)}</td></tr>
+      <tr><td>Crédito fiscal — uso exclusivo actividad gravada/exportación</td><td class="num">${fmt(t.ivaGravada)}</td></tr>
+      <tr><td>Crédito fiscal — uso común (ver nota de proporcionalidad)</td><td class="num">${fmt(t.ivaComunTotal)}</td></tr>
+      <tr><td class="muted small">IVA de gastos de uso exclusivo donaciones (sin derecho a crédito)</td><td class="num muted small">${fmt(t.ivaExentaNoCred)}</td></tr>
+      <tr style="font-weight:600;"><td>Crédito fiscal total a utilizar</td><td class="num">${fmt(t.creditoFiscalTotal)}</td></tr>
+      <tr style="font-weight:700;border-top:2px solid var(--ink);"><td>${t.ivaAPagar>0?'IVA a pagar':'Remanente de crédito fiscal'}</td>
+      <td class="num">${fmt(t.ivaAPagar>0?t.ivaAPagar:t.remanenteCredito)}</td></tr>
+    </table>
+    <div class="notebox">La proporcionalidad del Art. 23° N°3 (DL 825) solo se activa cuando conviven, en el mismo período, ventas con y sin derecho a crédito. Como las donaciones no son "operaciones" para efectos de IVA, este modelo asume que el 100% del IVA de uso común es recuperable mientras no registres gastos de uso exclusivo en actividad exenta sin derecho a crédito. Antes de presentar, valida esta lectura con tu contador — especialmente si Tarea Global comienza a tener ingresos afectos que coexistan con actividades realmente exentas (no donaciones).</div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Retenciones</h2>
+    <table>
+      <tr><td>Honorarios pagados a terceros (bruto)</td><td class="num">${fmt(t.totalHonorarios)}</td></tr>
+      <tr style="font-weight:700;"><td>Retención de honorarios a enterar (15,25%)</td><td class="num">${fmt(t.retencionHonorarios)}</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>3 · Pagos Provisionales Mensuales (PPM)</h2>
+    <p class="hint">Como fundación clasificada en "Contribuyentes no sujetos al Art. 14° LIR", Tarea Global no determina Renta Líquida Imponible de Primera Categoría por esta vía. La obligatoriedad de PPM depende de si existen ingresos que constituyan renta afecta según tu régimen — confírmalo con tu contador antes del primer período con ventas reales. Este libro no calcula un PPM por defecto.</p>
+  </div>
+
+  <div class="card">
+    <h2>Total estimado a pagar</h2>
+    <div class="stat"><div class="n">${fmt(t.totalAPagarEstimado)}</div><div class="l">IVA a pagar + retenciones de honorarios</div></div>
+  </div>
+  `;
+}
+
+/* ---------------------------------------------------------------
+   GUÍA PASO A PASO
+--------------------------------------------------------------- */
+function viewGuia(){
+  const t = periodTotals(PERIOD);
+  let steps;
+  if(t.sinMovimiento){
+    steps = `
+      <li><b>Ingresa a sii.cl</b><span>Servicios online → Impuestos mensuales → Declaración mensual (F29) → Declarar IVA (F29).</span></li>
+      <li><b>Autentícate</b><span>RUT de la Fundación y clave tributaria.</span></li>
+      <li><b>Selecciona el período</b><span>${periodLabel(PERIOD)}.</span></li>
+      <li><b>Elige "Sin movimiento"</b><span>Confirma que no hubo ventas, compras, honorarios ni retenciones en el mes — coincide con lo registrado en este libro.</span></li>
+      <li><b>Envía la declaración</b><span>No genera pago. Guarda el comprobante (folio) que entrega el SII.</span></li>
+      <li><b>Marca el período como presentado</b><span>Vuelve al Panel del mes y usa "Marcar como presentada", adjuntando el folio en una nota si quieres dejar respaldo.</span></li>
+    `;
+  } else {
+    steps = `
+      <li><b>Verifica el Registro de Compras y Ventas (RCV)</b><span>En sii.cl, confirma que todas las facturas/boletas emitidas y recibidas del mes estén reflejadas ahí — el F29 se prellena desde el RCV, no desde este libro.</span></li>
+      <li><b>Ingresa a Declarar IVA (F29)</b><span>Servicios online → Impuestos mensuales → Declaración mensual (F29).</span></li>
+      <li><b>Selecciona el período ${periodLabel(PERIOD)}</b><span>Revisa la Propuesta de Declaración que arma el SII automáticamente.</span></li>
+      <li><b>Compara la propuesta contra este libro</b><span>Débito fiscal ≈ ${fmt(t.debitoFiscal)} · Crédito fiscal ≈ ${fmt(t.creditoFiscalTotal)} · Retención honorarios ≈ ${fmt(t.retencionHonorarios)}. Si algo no calza, revisa boletas/facturas no registradas en el RCV antes de continuar.</span></li>
+      <li><b>Ajusta los códigos si corresponde</b><span>Incluye retenciones de honorarios y, si aplica, el crédito especial de exportador de servicios (requiere estar inscrito como exportador y contar con la calificación de Aduanas).</span></li>
+      <li><b>Revisa el total a pagar</b><span>Debería aproximarse a ${fmt(t.totalAPagarEstimado)}. Puedes postergar el pago del IVA hasta 60 días si tienes buen comportamiento tributario y lo necesitas.</span></li>
+      <li><b>Envía y paga</b><span>Con tarjeta/cuenta corriente en línea, o genera el Cupón de Pago para pagar en un banco. Plazo: día 12 (papel/manual) o día 20 (electrónico) del mes siguiente.</span></li>
+      <li><b>Guarda el comprobante y marca el período</b><span>Vuelve al Panel del mes y usa "Marcar como presentada".</span></li>
+    `;
+  }
+  return `
+  <div class="pagehead">
+    <div><h1>Guía paso a paso — ${periodLabel(PERIOD)}</h1><p>Generada según lo que este libro tiene registrado para el mes. La declaración oficial siempre se hace en sii.cl.</p></div>
+    ${periodPickerHTML()}
+  </div>
+  <div class="card"><ul class="steps">${steps}</ul></div>
+  <div class="card">
+    <h2>Si algo no coincide</h2>
+    <p class="hint">El F29 real se basa en los Documentos Tributarios Electrónicos ya emitidos/recibidos en el SII, no en este libro. Usa este libro para anticipar el resultado y armar tu respaldo interno, pero la fuente de verdad al declarar es siempre la Propuesta de Declaración del SII.</p>
+  </div>
+  `;
+}
+
+/* ---------------------------------------------------------------
+   REGISTRO SEMESTRAL DE APORTES (Art 8 estatutos)
+--------------------------------------------------------------- */
+function viewAportesSemestrales(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const half = now.getMonth()<6 ? 'S1' : 'S2';
+  const rangos = {
+    S1: [year+'-01', year+'-06'],
+    S2: [year+'-07', year+'-12'],
+  };
+  function buildTable(sem){
+    const [ini,fin] = rangos[sem];
+    const rows = DATA.donaciones.filter(x=> x.fecha && x.fecha.slice(0,7)>=ini && x.fecha.slice(0,7)<=fin);
+    const total = rows.reduce((s,x)=>s+Number(x.monto||0),0);
+    const trs = rows.map(x=>`<tr><td>${x.fecha}</td><td>${x.reservado?'<span class="reservado">Nombre reservado</span>':x.donante}</td><td class="num">${fmt(x.monto)}</td></tr>`).join('')
+      || `<tr><td colspan="3" class="empty">Sin aportes registrados en este semestre.</td></tr>`;
+    return `<div class="card"><h2>${sem==='S1'?'Primer semestre':'Segundo semestre'} ${year} <span class="muted small">— total ${fmt(total)}</span></h2>
+      <table><thead><tr><th>Fecha</th><th>Aportante</th><th class="num">Monto</th></tr></thead><tbody>${trs}</tbody></table></div>`;
+  }
+  return `
+  <div class="pagehead"><div><h1>Registro semestral de aportes</h1><p>Exigido por el Art. 8° de los estatutos. El Tesorero debe mantenerlo actualizado y reflejarlo en los balances.</p></div></div>
+  ${buildTable('S1')}
+  ${buildTable('S2')}
+  <div class="notebox">Nombre público salvo reserva fundada del aportante — esa reserva puede levantarse ante requerimiento de autoridad pública o judicial (Art. 8°).</div>
+  `;
+}
+
+/* ---------------------------------------------------------------
+   OBLIGACIONES ANUALES
+--------------------------------------------------------------- */
+function viewAnual(){
+  return `
+  <div class="pagehead"><div><h1>Obligaciones anuales</h1><p>Además del F29 mensual, estas son las declaraciones de todo el año.</p></div></div>
+  <div class="card">
+    <h2>Declaración Jurada 1945</h2>
+    <p class="hint">Obligatoria para organizaciones sin fines de lucro: informa ingresos, desembolsos y otros antecedentes del año anterior. <b>Vence el 30 de junio.</b></p>
+  </div>
+  <div class="card">
+    <h2>Formulario 22 (Renta)</h2>
+    <p class="hint">Declaración anual de Impuesto a la Renta. Como fundación no sujeta al Art. 14° LIR, Tarea Global no está obligada a informar el detalle de Renta Líquida Imponible en la Línea 56, pero igual debe presentar el F22. <b>Vence en abril.</b></p>
+  </div>
+  <div class="card">
+    <h2>Si hay exportación de servicios</h2>
+    <p class="hint">Revisar anualmente la inscripción como exportador de servicios y, si corresponde, la Declaración Jurada 3601 y el procedimiento de recuperación de IVA exportador ante Tesorería.</p>
+  </div>
+  `;
+}
+
+/* ---------------------------------------------------------------
+   EXPORTAR / RESPALDO
+--------------------------------------------------------------- */
+function toCSV(rows, cols){
+  const header = cols.map(c=>c.label).join(';');
+  const lines = rows.map(r=> cols.map(c=>{
+    let v=r[c.k]; if(c.type==='checkbox') v=v?'Sí':'No'; return (''+(v??'')).replace(/;/g,',');
+  }).join(';'));
+  return [header,...lines].join('\n');
+}
+function downloadFile(filename, content){
+  const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function exportAll(){
+  const parts=[];
+  Object.keys(LIST_CONFIG).forEach(name=>{
+    const cfg=LIST_CONFIG[name];
+    parts.push('## '+cfg.title);
+    parts.push(toCSV(DATA[name], cfg.cols));
+    parts.push('');
+  });
+  downloadFile('tarea_global_libro_contable_'+PERIOD+'.csv', parts.join('\n'));
+}
+function exportJSON(){
+  downloadFile('tarea_global_respaldo.json', JSON.stringify({CFG,DATA}, null, 2));
+}
+function viewExportar(){
+  return `
+  <div class="pagehead"><div><h1>Exportar y respaldar</h1><p>Recomendado: exporta un respaldo mensual, además de lo que quede guardado aquí.</p></div></div>
+  <div class="card">
+    <h2>Respaldo en CSV (para Excel)</h2>
+    <p class="hint">Descarga todos los registros de todas las categorías en un solo archivo, listo para revisar con un contador o auditor.</p>
+    <button class="btn amber" onclick="exportAll()">Descargar CSV</button>
+  </div>
+  <div class="card">
+    <h2>Respaldo técnico completo (JSON)</h2>
+    <p class="hint">Copia íntegra de todos los datos y la configuración. Útil como respaldo de seguridad, no pensado para lectura directa.</p>
+    <button class="btn ghost" onclick="exportJSON()">Descargar JSON</button>
+  </div>
+  <div class="notebox">Este libro guarda los datos en el almacenamiento del artefacto, accesible a quien tenga el enlace y el PIN — no es una base de datos bancaria. Para una entidad real, un respaldo periódico fuera de esta herramienta (Excel, Drive) sigue siendo la mejor práctica.</div>
+  `;
+}
+
+/* ---------------------------------------------------------------
+   CONFIG
+--------------------------------------------------------------- */
+function viewConfig(){
+  return `
+  <div class="pagehead"><div><h1>Configuración</h1><p>Activa cada módulo cuando la fundación empiece a operar en esa área.</p></div></div>
+  <div class="card">
+    <h2>Módulos</h2>
+    <div class="toggle-row">
+      <div class="lab"><b>Facturación nacional afecta a IVA</b><span>Actívalo cuando empieces a emitir facturas o boletas dentro de Chile.</span></div>
+      <label class="switch"><input type="checkbox" ${CFG.ivaActiva?'checked':''} onchange="toggleCfg('ivaActiva',this.checked)"><span class="slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div class="lab"><b>Facturación al extranjero</b><span>Actívalo cuando emitas la primera factura a un cliente sin domicilio en Chile.</span></div>
+      <label class="switch"><input type="checkbox" ${CFG.exportActiva?'checked':''} onchange="toggleCfg('exportActiva',this.checked)"><span class="slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div class="lab"><b>Empleados / honorarios</b><span>Actívalo cuando empieces a pagar boletas de honorarios o remuneraciones.</span></div>
+      <label class="switch"><input type="checkbox" ${CFG.empleadosActiva?'checked':''} onchange="toggleCfg('empleadosActiva',this.checked)"><span class="slider"></span></label>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Seguridad</h2>
+    <p class="hint">PIN de acceso a este libro. Al entregarlo a un tercero de confianza, comparte el enlace y el PIN por separado.</p>
+    <button class="btn ghost" onclick="changePin()">Cambiar PIN</button>
+  </div>
+  <div class="card">
+    <h2>Datos en Google Sheets</h2>
+    <p class="hint">Si alguien editó la planilla directamente (por ejemplo tu contador), usa este botón para traer los cambios más recientes.</p>
+    <button class="btn ghost" onclick="resyncNow()">Sincronizar ahora</button>
+  </div>
+  <div class="card">
+    <h2>Datos de la Fundación</h2>
+    <table>
+      <tr><td class="muted">Nombre</td><td>Fundación Tarea Global</td></tr>
+      <tr><td class="muted">Forma jurídica</td><td>Fundación de derecho privado sin fines de lucro (Título XXXIII, Libro I, Código Civil)</td></tr>
+      <tr><td class="muted">Domicilio estatutario</td><td>Blest Gana 5903 casa E, La Reina, Región Metropolitana</td></tr>
+      <tr><td class="muted">Responsable contable (Art. 16° estatutos)</td><td>Tesorero/a en ejercicio</td></tr>
+      <tr><td class="muted">Destino del patrimonio en caso de disolución</td><td>${CFG.disolucionBeneficiario}</td></tr>
+    </table>
+  </div>
+  `;
+}
+async function resyncNow(){
+  setSyncStatus('saving');
+  try{ await syncFromBackend(); setSyncStatus('ok'); render(); }
+  catch(e){ setSyncStatus('error'); alert('No se pudo sincronizar con la planilla.'); }
+}
+async function toggleCfg(key,val){
+  CFG[key]=val; render();
+  try{ await apiPost({sheet:'Config', op:'setKV', key, value:val}); }
+  catch(e){ alert('No se pudo guardar en la planilla.'); }
+}
+async function changePin(){
+  const np = prompt('Nuevo PIN (4 a 8 dígitos):');
+  if(np && np.trim().length>=4){
+    CFG.pin=np.trim();
+    try{ await apiPost({sheet:'Config', op:'setKV', key:'pin', value:CFG.pin}); alert('PIN actualizado.'); }
+    catch(e){ alert('No se pudo guardar el nuevo PIN.'); }
+  }
+}
+
+/* ---------------------------------------------------------------
+   FORM WIRING (noop hook for future use)
+--------------------------------------------------------------- */
+function wireForms(){}
+
+boot();
+</script>
+</body>
+</html>
